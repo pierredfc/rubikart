@@ -1,0 +1,7 @@
+RubikArt/Debug/*
+*.sln
+*.sdf
+*.opensdf
+RubikArt/RubikArt.vcxproj.filters
+RubikArt/RubikArt.vcxproj
+RubikArt/x64/*
