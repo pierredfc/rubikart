@@ -1,21 +1,30 @@
 #include "opencv2/core.hpp"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/highgui.hpp"
-#include "Cube.h"
-#include "RubikColor.h"
-#include "Square.h"
-#include "Side.h"
-
 #include <stdio.h>
 #include <iostream>
 
 using namespace cv;
 using namespace std;
 
-// White - Green - Red - Blue - Orange - Yellow
 std::vector<Scalar> minColor{ Scalar(70, 20, 130), Scalar(60, 110, 110), Scalar(120, 120, 140), Scalar(80, 180, 190), Scalar(5, 150, 150), Scalar(20, 100, 100) };
 std::vector<Scalar> maxColor{ Scalar(180, 110, 255), Scalar(100, 220, 250), Scalar(180, 250, 200), Scalar(120, 255, 255), Scalar(15, 235, 250), Scalar(40, 255, 255) };
 
+enum ColorRubik{
+	white = 0,
+	green = 1,
+	red = 2,
+	blue = 3,
+	orange = 4,
+	yellow = 5
+};
+
+struct SquareRubik{
+	Point2f position;
+	ColorRubik color;
+
+	SquareRubik(Point2f point, ColorRubik col) : position(point), color(col) {}
+};
 
 bool filterRec(Rect rec){
 
@@ -30,6 +39,23 @@ bool filterRec(Rect rec){
 	}
 
 	return false;
+}
+
+bool sortY(SquareRubik r1, SquareRubik r2){
+	return r1.position.y < r2.position.y;
+}
+
+bool sortX(SquareRubik r1, SquareRubik r2){
+	return r1.position.x < r2.position.x;
+}
+
+vector<SquareRubik> sortResult(vector<SquareRubik> points){
+	std::sort(points.begin(), points.end(), sortY);
+	std::sort(points.begin(), points.begin() + 3, sortX);
+	std::sort(points.begin() + 3, points.begin() + 6, sortX);
+	std::sort(points.begin() + 6, points.end(), sortX);
+
+	return points;
 }
 
 // Yellow / Orange / Red / Blue / Green / White
@@ -60,13 +86,10 @@ int main(int argc, char* argv[])
 	vector<vector<vector<Point>>> finalContours;
 
 	int nb_capture = 0;
-	Cube rubiksCube(3);
 
 	while (nb_capture < 6)
 	{
-		vector<Point2f> points;
-
-		Side side(3);
+		vector<SquareRubik> points;
 
 		int count = 0;
 		cap.read(frame_RGB); // read a new frame from video
@@ -115,7 +138,7 @@ int main(int argc, char* argv[])
 					count++;
 					rectangle(frame_RGB, rec, Scalar(0, 255, 0), 2);
 					putText(frame_RGB, text, Point2f(rec.x + rec.width / 2, rec.y + rec.height / 2), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0, 0));
-					points.push_back(Point2f(rec.x, rec.y));
+					points.push_back(SquareRubik(Point2f(rec.x, rec.y), ColorRubik(j)));
 				}
 			}
 		}
@@ -124,11 +147,12 @@ int main(int argc, char* argv[])
 
 		// Found all cube of a side!
 		if (count == 9){
-			for (int i = 0; i < points.size(); i++){
-				// TODO emplacement
+			points = sortResult(points);
+
+			for (SquareRubik s : points){
+				std::cout << "(" << s.position.x << "," << s.position.y << ") : " << s.color << std::endl;
 			}
 
-			rubiksCube.setSide(nb_capture, side);
 			nb_capture++;
 			waitKey();
 		}
