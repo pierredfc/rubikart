@@ -58,6 +58,16 @@ vector<SquareRubik> sortResult(vector<SquareRubik> points){
 	return points;
 }
 
+void printSide(vector<SquareRubik> points){
+	for (int i = 0; i < points.size(); i++){
+		std::cout << points.at(i).color;
+		if ((i + 1) % 3 == 0){
+			std::cout << std::endl;
+		}
+	}
+
+}
+
 // Yellow / Orange / Red / Blue / Green / White
 
 int main(int argc, char* argv[])
@@ -82,6 +92,8 @@ int main(int argc, char* argv[])
 	Mat frame_threshed;
 	Mat imgray;
 	Mat result;
+
+	vector<vector<SquareRubik>> results;
 
 	vector<vector<vector<Point>>> finalContours;
 
@@ -149,9 +161,8 @@ int main(int argc, char* argv[])
 		if (count == 9){
 			points = sortResult(points);
 
-			for (SquareRubik s : points){
-				std::cout << "(" << s.position.x << "," << s.position.y << ") : " << s.color << std::endl;
-			}
+			printSide();
+			results.push_back(points);
 
 			nb_capture++;
 			waitKey();
