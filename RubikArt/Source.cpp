@@ -65,7 +65,6 @@ void printSide(vector<SquareRubik> points){
 			std::cout << std::endl;
 		}
 	}
-
 }
 
 // Yellow / Orange / Red / Blue / Green / White
@@ -161,10 +160,10 @@ int main(int argc, char* argv[])
 		if (count == 9){
 			points = sortResult(points);
 
-			printSide();
+			printSide(points);
 			results.push_back(points);
 
-			nb_capture++;
+ 			nb_capture++;
 			waitKey();
 		}
 
