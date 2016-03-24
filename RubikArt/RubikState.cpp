@@ -12,7 +12,23 @@ int RubikState::getCameraId(){
 	return this->camera_id;
 }
 
-bool RubikState::filterRec(Rect rec){
+void RubikState::setSquareCount(int square_count){
+	this->square_count = square_count;
+}
+
+int RubikState::getSquareCount(){
+	return this->square_count;
+}
+
+void RubikState::setWindowName(String window_name){
+	this->window_name = window_name;
+}
+
+String RubikState::getWindowName(){
+	return this->window_name;
+}
+
+bool RubikState::filterRect(Rect rec){
 	if (rec.width == 60 && rec.height == 60){
 		return true;
 	}
@@ -26,13 +42,51 @@ bool RubikState::filterRec(Rect rec){
 	return false;
 }
 
+String RubikState::defineColorText(int color_id){
+	String result = "";
+
+	switch (color_id){
+		case 0:
+			result = "W";
+			break;
+		case 1:
+			result = "G";
+			break;
+		case 2:
+			result = "R";
+			break;
+		case 3:
+			result = "B";
+			break;
+		case 4:
+			result = "O";
+			break;
+		case 5:
+			result = "Y";
+			break;
+		default:
+			break;
+	}
+
+	return result;
+}
 
 RubikState::RubikState(){
 	this->setCameraId(0);
+	this->setSquareCount(0);
+	this->setWindowName("Default Rubik Window");
 }
 
 RubikState::RubikState(int camera_id){
 	this->setCameraId(camera_id);
+	this->setSquareCount(0);
+	this->setWindowName("Default Rubik Window");
+}
+
+RubikState::RubikState(int camera_id, String window_name){
+	this->setCameraId(camera_id);
+	this->setSquareCount(0);
+	this->setWindowName(window_name);
 }
 
 void RubikState::launchCapture(){
@@ -46,7 +100,7 @@ void RubikState::launchCapture(){
 		return;
 	}
 
-	namedWindow("MyVideo", CV_WINDOW_AUTOSIZE); //create a window called "MyVideo"
+	namedWindow(this->getWindowName(), CV_WINDOW_AUTOSIZE); //create a window called "MyVideo"
 
 	std::vector<std::vector<Point> > contours;
 	std::vector<Vec4i> hierarchy;
@@ -59,16 +113,15 @@ void RubikState::launchCapture(){
 	Mat result;
 
 	std::vector<std::vector<SquareRubik>> results;
-
 	std::vector<std::vector<std::vector<Point>>> finalContours;
 
 	int nb_capture = 0;
 
-	while (nb_capture < 6)
+	while (nb_capture < NB_CAPTURE)
 	{
 		std::vector<SquareRubik> points;
 
-		int count = 0;
+		this->setSquareCount(0);
 		cap.read(frame_RGB); // read a new frame from video
 		bilateralFilter(frame_RGB, filter, 9, 75, 75);
 		cvtColor(filter, frame_HSV, COLOR_BGR2HSV);
@@ -84,35 +137,13 @@ void RubikState::launchCapture(){
 		}
 
 		for (unsigned int j = 0; j < finalContours.size(); j++){
-			String text = "";
-			switch (j){
-			case 0:
-				text = "W";
-				break;
-			case 1:
-				text = "G";
-				break;
-			case 2:
-				text = "R";
-				break;
-			case 3:
-				text = "B";
-				break;
-			case 4:
-				text = "O";
-				break;
-			case 5:
-				text = "Y";
-				break;
-			default:
-				break;
-			}
-
+			String text = defineColorText(j);
+			
 			for (unsigned int i = 0; i < finalContours[j].size(); i++){
 				Rect rec = boundingRect(finalContours[j][i]);
 
-				if (filterRec(rec)){
-					count++;
+				if (filterRect(rec)){
+					this->setSquareCount(this->getSquareCount() + 1);
 					rectangle(frame_RGB, rec, Scalar(0, 255, 0), 2);
 					putText(frame_RGB, text, Point2f(rec.x + rec.width / 2, rec.y + rec.height / 2), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0, 0));
 					points.push_back(SquareRubik(Point2f(rec.x, rec.y), ColorRubik(j)));
@@ -120,10 +151,10 @@ void RubikState::launchCapture(){
 			}
 		}
 
-		imshow("MyVideo", frame_RGB);
+		imshow(this->getWindowName(), frame_RGB);
 
 		// Found all cube of a side!
-		if (count == 9){
+		if (this->getSquareCount() == 9){
 			points = sortResult(points);
 
 			printSide(points);
