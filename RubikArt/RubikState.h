@@ -11,21 +11,21 @@ class RubikState {
 	private:
 		int camera_id;
 		int square_count;
-		bool filterRect(Rect);
-		String window_name;
-		String defineColorText(int);
+		bool filterRect(cv::Rect);
+		cv::String window_name;
+		cv::String defineColorText(int);
 
 	public:
 		RubikState();
 		RubikState(int);
-		RubikState(int, String);
+		RubikState(int, cv::String);
 		void launchCapture();
 		void setCameraId(int);
 		int getCameraId();
 		void setSquareCount(int);
 		int getSquareCount();
-		void setWindowName(String);
-		String getWindowName();
+		void setWindowName(cv::String);
+		cv::String getWindowName();
 		void printSide(std::vector<SquareRubik>);
 		std::vector<SquareRubik> sortResult(std::vector<SquareRubik>);
 		static bool sortXAxis(SquareRubik r1, SquareRubik r2) { return r1.position.x < r2.position.x; };
