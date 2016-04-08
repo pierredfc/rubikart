@@ -1,11 +1,17 @@
 #include "RubikRobot.h"
 
 RubikRobot::RubikRobot(){
-
+	this->state = RubikState(0);
 }
 
 RubikRobot::RubikRobot(std::string port){
 	this->port = port;
+	this->state = RubikState(0);
+}
+
+RubikRobot::RubikRobot(std::string port, int cameraID){
+	this->port = port;
+	this->state = RubikState(cameraID);
 }
 
 void RubikRobot::send(unsigned char msg){
@@ -40,7 +46,8 @@ bool RubikRobot::sendSByte(unsigned char msg){
 	if (WriteFile(hComm, &msg, sizeof(msg), &dwWritten, 0)) {
 		std::cout << "wrote byte " << msg << " to serial port" << std::endl;
 		return true;
-	} else {
+	}
+	else {
 		std::cout << "serial port write failed" << std::endl;
 		return false;
 	}
@@ -74,7 +81,8 @@ bool RubikRobot::openPort(){
 	if (hComm == INVALID_HANDLE_VALUE) {
 		std::cout << "Failed to open serial port " << this->port << std::endl;
 		return false;
-	} else {
+	}
+	else {
 		std::cout << "Serial port " << this->port << " opened" << std::endl;
 		return true;
 	}
@@ -84,7 +92,8 @@ bool RubikRobot::closePort(){
 	if (CloseHandle(hComm)) {
 		std::cout << "Port closed" << std::endl;
 		return true;
-	} else {
+	}
+	else {
 		std::cout << "Port closed failed" << std::endl;
 		return false;
 	}
@@ -114,8 +123,13 @@ bool RubikRobot::setupPort(){
 	if (!SetCommState(hComm, &dcb)) {
 		std::cout << "Failed to set port state (" << GetLastError() << ")" << std::endl;
 		return false;
-	} else {
+	}
+	else {
 		std::cout << "Port setup complete" << std::endl;
 		return true;
 	}
+}
+
+RubikState RubikRobot::getState() {
+	return this->state;
 }
