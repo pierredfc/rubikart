@@ -24,7 +24,7 @@ public:
 	RubikRobot();
 	RubikRobot(std::string);
 	RubikRobot::RubikRobot(std::string, int);
-	void send(unsigned char);
+	bool send(unsigned char);
 	unsigned char read();
 	bool initPort();
 	void setPort(std::string);

@@ -8,16 +8,13 @@ int main(int argc, char* argv[])
 	if (robot.initPort()){
 		std::cout << "Communication is ready" << std::endl;
 
-		robot.send('f');
-		if (robot.read() == 'f'){
+		if (robot.send('f')) {
 			std::cout << "Movement done" << std::endl;
 		}
 
-		robot.send('e');
-		if (robot.read() == 'e'){
+		if (robot.send('e')) {
 			std::cout << "Movement done" << std::endl;
 		}
-
 	} else {
 		std::cout << "Communication is not ready" << std::endl;
 	}

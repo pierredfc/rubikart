@@ -14,8 +14,14 @@ RubikRobot::RubikRobot(std::string port, int cameraID){
 	this->state = RubikState(cameraID);
 }
 
-void RubikRobot::send(unsigned char msg){
+bool RubikRobot::send(unsigned char msg){
 	this->sendSByte(msg);
+	if (this->read() == msg){
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 unsigned char RubikRobot::read(){
