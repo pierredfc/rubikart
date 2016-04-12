@@ -1,5 +1,6 @@
 #include "RubikState.h"
 
+/* White - Green - Red - Blue - Orange - Yellow */
 std::vector<Scalar> minColor{ Scalar(70, 20, 130), Scalar(60, 110, 110), Scalar(120, 120, 140), Scalar(80, 180, 190), Scalar(5, 150, 150), Scalar(20, 100, 100) };
 std::vector<Scalar> maxColor{ Scalar(180, 110, 255), Scalar(100, 220, 250), Scalar(180, 250, 200), Scalar(120, 255, 255), Scalar(15, 235, 250), Scalar(40, 255, 255) };
 
@@ -26,14 +27,24 @@ void RubikState::setWindowName(String window_name){
 String RubikState::getWindowName(){
 	return this->window_name;
 }
-
+/* 60 60
+	55 65 
+		55 65*/
 bool RubikState::filterRect(Rect rec){
-	if (rec.width == 60 && rec.height == 60){
+
+	if (rec.x < 100 || rec.x > 450){
+		return false;
+	}
+	else if (rec.y < 30 || rec.y > 300){
+		return false;
+	}
+
+	if (rec.width == 78 && rec.height == 78){
 		return true;
 	}
 
-	if (rec.width > 55 && rec.width < 65){
-		if (rec.height > 55 && rec.height < 65){
+	if (rec.width > 75 && rec.width < 85){
+		if (rec.height > 75 && rec.height < 85){
 			return true;
 		}
 	}
@@ -42,32 +53,22 @@ bool RubikState::filterRect(Rect rec){
 }
 
 String RubikState::defineColorText(int color_id){
-	String result = "";
-
 	switch (color_id){
 		case 0:
-			result = "W";
-			break;
+			return "W";
 		case 1:
-			result = "G";
-			break;
+			return "G";
 		case 2:
-			result = "R";
-			break;
+			return "R";
 		case 3:
-			result = "B";
-			break;
+			return "B";
 		case 4:
-			result = "O";
-			break;
+			return "O";
 		case 5:
-			result = "Y";
-			break;
+			return "Y";
 		default:
-			break;
+			return "";
 	}
-
-	return result;
 }
 
 RubikState::RubikState(){
